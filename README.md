@@ -9,6 +9,17 @@ Such a database will be used by a squid helper (based on the squid "check_ip.php
 
 Still in development...
 
+# Files
+
+- check_unifi.php - Create a SQLITE database with ONLINE GUESTS connected users in UNIFI CONTROLLER.
+
+- check_ip.php - File responsible for check a DATABASE SQLITE db in /var/db/  - Code BASED from pfsense/FreeBSD-ports
+
+- config.php - configuration file for client.php
+- client.php - API from  " Art-of-WiFi:"
+
+
+
 ## Need help or have suggestions?
 
 There is still work to be done to add functionality and improve the usability of this class, so all suggestions/comments are welcome. Please use the github [issue] to share your ideas/questions.
