@@ -1,5 +1,6 @@
 # squid-unifi-authentication
- System that proves an authentication method for squid proxy.
+
+
 System that proves an authentication method for squid proxy.
 
 Collects connected users as guests in the UNIFI controller and their respective IP addresses by creating a database (SQLITE3).
