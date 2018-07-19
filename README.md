@@ -2,9 +2,9 @@
 
 sample usage in squid.conf
 
-external_acl_type check_cp children-startup=2 children-max=5 children-idle=1 ttl=5 %SRC /path_of_file/check_ip.php
-acl password external check_cp
-http_access allow password
+- external_acl_type check_cp children-startup=2 children-max=5 children-idle=1 ttl=5 %SRC /path_of_file/check_ip.php
+- acl password external check_cp
+- http_access allow password
 
 
 System that proves an authentication method for squid proxy.
