@@ -1,11 +1,10 @@
 # squid-unifi-authentication
 
+sample usage in squid.conf
 
-Attention the code is not working.
-
-I'm working on the code.
-
-Still in development...
+external_acl_type check_cp children-startup=2 children-max=5 children-idle=1 ttl=5 %SRC /path_of_file/check_ip.php
+acl password external check_cp
+http_access allow password
 
 
 System that proves an authentication method for squid proxy.
@@ -18,18 +17,23 @@ Such a database will be used by a squid helper (based on the squid "check_ip.php
 
 # Files
 
-- check_unifi.php - Create a SQLITE database with ONLINE GUESTS connected users in UNIFI CONTROLLER.
+- check_unifi.php - Create a SQLITE database with ONLINE GUESTS connected users in UNIFI CONTROLL
+MUST BE EXECUTED in a SQUID SERVER as DAEMON.
+
 
 - check_ip.php - File responsible for check a DATABASE SQLITE db in /var/db/  - Code BASED from pfsense/FreeBSD-ports
 
-- config.php - configuration file for client.php
-- client.php - API from  " Art-of-WiFi:"
+- config.php    - configuration file for client.php
+- client.php    - API from  " Art-of-WiFi:"
+- functions.php - Code responsible for initiate a NEW SQLITE DB   - Code BASED from pfsense/FreeBSD-ports
 
+# REQUERIMENTS
 
+is needed install PHP-CGI (EX:  apt-get install php-cgi)
 
 ## Need help or have suggestions?
 
-There is still work to be done to add functionality and improve the usability of this class, so all suggestions/comments are welcome. Please use the github [issue] to share your ideas/questions.
+There is still work to be done to add functionality and improve the usability of this helper, so all suggestions/comments are welcome. Please use the github [issue] to share your ideas/questions.
 
 ## Contribute
 
