@@ -1,10 +1,7 @@
-#!/usr/local/bin/php-cgi -q
+#!/usr/bin/php-cgi -q
 <?php
 
-## Code based on check_ip PFSENSE.
-
-require_once('config.php');
-$site_id = 'default';
+$db="/var/db/captiveportal_unifi.db";
 
 error_reporting(0);
 
@@ -18,15 +15,6 @@ if (!defined(STDOUT)) {
 while (!feof(STDIN)) {
 
 	$check_ip = trim(fgets(STDIN));
-/*
-// trecho de codigo que recriar os usuario online a cada 30 segundos
-
-	$db="/var/db/captiveportal_unifi.db";
-		$end_time = microtime(true);
-		$duracao = $end_time-$start_time;
-	$start_time = microtime(true);
-
-*/
 
 	$status = squid_check_ip($db, $check_ip);
 
@@ -37,12 +25,11 @@ while (!feof(STDIN)) {
 	}
 }
 function squid_check_ip($db, $check_ip) {
-	exec("sqlite3 {$db} \"SELECT ip FROM captiveportal WHERE ip='{$check_ip}'\"", $ip);
+	exec("sqlite3 -init 1000 {$db} \"SELECT ip FROM captiveportal WHERE ip='{$check_ip}'\"", $ip);
 	if ($check_ip == $ip[0]) {
-		exec("sqlite3 {$db} \"SELECT username FROM captiveportal WHERE ip='{$check_ip}'\"", $user);
+		exec("sqlite3 -init 1000 {$db} \"SELECT username FROM captiveportal WHERE ip='{$check_ip}'\"", $user);
 		return $user[0];
 	}
-	//unifi_check($check_ip);
 }
 
 ?>
