@@ -13,7 +13,11 @@ Collects connected users as guests in the UNIFI controller and their respective 
 
 Such a database will be used by a squid helper (based on the squid "check_ip.php" PFSENSE helper)
 
+# Instalation required
 
+apt-get install php php-sqlite3 sqlite3
+
+chmod +x check_unifi.php
 
 # Files
 
