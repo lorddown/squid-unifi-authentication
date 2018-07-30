@@ -1,4 +1,4 @@
-#!/usr/local/bin/php-cgi -q
+#!/usr/bin/php-cgi -q
 <?php
 set_time_limit(0);
 
@@ -17,7 +17,7 @@ set_time_limit(0);
  */
 
 $cpzone = "UNIFI";
-        
+
 require_once('config.php');
 require_once('client.php');
 require_once('functions.php');
@@ -41,18 +41,21 @@ $loginresults      = $unifi_connection->login();
 
 while(true):
 
-    
+
 $data_list_clients = $unifi_connection->list_clients();
 $data_list_guests  = $unifi_connection->list_guests();
 
 $logged_used_checktime = microtime();
 //$data_list_guests  = $unifi_connection->list_guests(168);
 
-if (json_encode($data_list_clients, JSON_PRETTY_PRINT)=="[]");
-    {
-    exec("sqlite3 -init 1000  {$db} \"DELETE from captiveportal \"", $ip);
-    }
+//print_r(json_encode($data_list_clients, JSON_PRETTY_PRINT));
 
+$consulta=count($data_list_clients);
+
+if($consulta==0)
+    {
+    exec("sqlite3 -init 10000  {$db} \"DELETE from captiveportal \"", $ip);
+    }
 
 
 foreach($data_list_clients as $lista_clients)
@@ -62,47 +65,76 @@ if(isset($lista_clients->_id))
    if($lista_clients->is_guest)
      {
         $_id      = $lista_clients->_id;
-        if(isset($lista_clients->_id))
-           {        
-            $ip	  = $lista_clients->ip;
-           }
-	foreach($data_list_guests as $lista_guests)
-	{
-	if($lista_guests->expired == false)	
-	{
-        if($lista_guests->user_id == $_id)
-	   {
+        if(isset($lista_clients->_id)!="")
+            {
+            if(isset($lista_clients->ip))
+            {
+                $ip = $lista_clients->ip;
+            }
+            else
+            {
+                continue;
+            }
+            }
+            foreach($data_list_guests as $lista_guests)
+                {
+                if(isset($lista_guests->expired))
+                {
+                if($lista_guests->expired == false)
+                    {
+                    if(isset($lista_guests->user_id))
+                        {
+                        if($lista_guests->user_id == $_id)
+                           {
 
-		$authorized_by = $lista_guests->authorized_by;
+                                $authorized_by = $lista_guests->authorized_by;
 
+                                if(isset($lista_guests->mac))
+                                    {
+                                    $mac = $lista_guests->mac;
+                                    }
+                                else
+                                    {
+                                    $mac = "";
+                                    }
 
-		if($authorized_by=='voucher')
-		{
-		   $username =  $authorized_by.$lista_guests->voucher_code;
-		}
-		elseif($authorized_by=='radius')
-		{
-	 	   $username =  $lista_guests->radius_username."-".$authorized_by."-".$mac;
-		}
+                                if($authorized_by=='voucher')
+                                {
+                                   $username =  $authorized_by.$lista_guests->voucher_code;
+                                }
+                                elseif($authorized_by=='radius')
+                                {
+//                                   $username =  $lista_guests->radius_username."-".$authorized_by."-".$mac;
+                                   $username =  $lista_guests->radius_username."-".$authorized_by;
+                                }
+                                elseif($authorized_by=='api')
+                                {
+//                                   $username =  $lista_guests->radius_username."-".$authorized_by."-".$mac;
+                                   $username =  $lista_guests->radius_username."-".$authorized_by;
+                                }
+                                else
+                                {
+                                   $username =  "unknown_user";
+                                }
 
-		$mac = $lista_guests->mac;
+                                if(isset($lista_guests->hostname))
+                                {
+                                   $hostname = $lista_guests->hostname;
+                                }
+                                else
+                                {
+                                   $hostname = "";
+                                }
 
-		if(isset($lista_guests->hostname))
-		{
-		   $hostname = $lista_guests->hostname;
-		}
-		else
-		{
-		   $hostname = " ";
-		}
+                                //echo $ip ." - ". $authorized_by ." - ". $username ." - ". $mac ." - ". $_id ." - ". $hostname ."\n";
 
-		echo $ip ." - ". $authorized_by ." - ". $username ." - ". $mac ." - ". $_id ." - ". $hostname ."\n";
-
-		exec("sqlite3 -init 1000 {$db} \"INSERT INTO captiveportal (ip,guest_id,authorized_by,username,logged_user) VALUES ('{$ip}','{$_id}','{$authorized_by}','{$username}','{$logged_used_checktime}')\"", $ip);
-                exec("sqlite3 -init 1000 {$db} \"DELETE FROM captiveportal WHERE logged_user !='{$logged_used_checktime}'\"", $ip);
-	   }
-	}
-	}
+                                exec("sqlite3 -init 10000 {$db} \"INSERT INTO captiveportal (ip,guest_id,authorized_by,username,logged_user) VALUES ('{$ip}','{$_id}','{$authorized_by}','{$username}','{$logged_used_checktime}')\"", $ip);
+                                exec("sqlite3 -init 10000 {$db} \"DELETE FROM captiveportal WHERE logged_user !='{$logged_used_checktime}'\"", $ip);
+                           }
+                        }
+                    }
+                }
+            }
 
      }
     }
@@ -110,7 +142,6 @@ if(isset($lista_clients->_id))
 
 
 
-sleep(1);
-echo "1";
+sleep(30);
 endwhile;
 ?>
